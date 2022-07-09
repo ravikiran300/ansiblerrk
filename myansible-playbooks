@@ -1,0 +1,138 @@
+---
+- name: Playbook for creating users
+  hosts: all
+
+  tasks:
+  - name: Create users
+    user:
+     name: george
+     home: /home/george
+     shell: /bin/bash
+
+==========
+
+---
+- name: Find a process and kill it 
+  hosts: 10.253.1.115
+ 
+  tasks:
+    - name: Get running processes from remote host
+      ignore_errors: yes
+      shell: "ps -few | grep top | awk '{print $2}'"
+      register: running_process
+ 
+    - name: Kill running processes
+      ignore_errors: yes
+      shell: "kill {{ item }}"
+      with_items: "{{ running_process.stdout_lines }}"
+============
+---
+- name: Change file permissions
+  hosts: all
+  
+  tasks:
+  - name: Files Permissions
+    file:
+     path: /home/iafzal/linux2
+     mode: a+w 
+==================
+
+---
+- name: Create a cron job
+  hosts: all
+
+  tasks:
+    - name: Schedule cron:
+      cron:
+	   name: This job is scheduled by Ansible
+	   minute: “0”
+	   hour: “10”
+	   day: “*”
+	   month: “*”
+	   weekday: “4“
+	   user: root
+	   job: “/home/iafzal/cfile.sh”
+  =====================================
+  ---
+- name: “Check remote clients connectivity status”
+  hosts: all
+
+  tasks:
+  - name: Test connectivity
+	ping:
+===========================================
+
+---
+- name: Add or update user password
+  hosts: all
+  
+  tasks:
+  - name: Change “george” password
+    user:
+      name: george
+      update_password: always
+      password: "{{ newpassword|password_hash('sha512’) }}”
+=======================
+
+---
+- name: Playbook for creating users
+  hosts: all
+
+  tasks:
+  - name: Create users
+    user:
+     name: george
+     home: /home/george
+     shell: /bin/bash
+
+
+
+ =====================================
+  
+  ---
+- name: Copy file from local to remote clients
+  hosts: all
+  
+  tasks:
+  - name: Copying file 
+    become: true
+    copy:
+     src: /home/iafzal/some.cfg
+     dest: /tmp
+     owner: iafzal
+     group: iafzal
+     mode: 0644
+=====================
+
+
+   
+   
+  
+
+===========
+---
+- name: Setup httpd and open firewall port
+  hosts: all
+  tasks:
+  - name: Install apache packages
+    yum:
+     name: httpd
+     state: present
+
+  - name: Start httpd
+    service:
+     name: httpd
+     state: started
+
+  - name: Open port 80 for http access
+    firewalld:
+     service: http
+     permanent: true
+     state: enabled
+
+  - name: Restart firewalld service to load firewall changes
+    service:
+     name: firewalld
+     state: reloaded
+     
+     ============
